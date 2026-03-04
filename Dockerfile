@@ -1,27 +1,19 @@
 FROM opensuse/leap:15.6
 
-ADD ansible /ansible/ 
-ADD init.sh /ansible/ 
+# Installer les dépendances
+RUN zypper --non-interactive in --auto-agree-with-licenses \
+    munin apache2 munin-node cron mailx
 
-WORKDIR /ansible/
+# Créer les répertoires nécessaires (si non créés par les volumes)
+RUN mkdir -p /var/lib/munin /var/log/munin /var/run/munin
 
-RUN zypper --non-interactive in --auto-agree-with-licenses python3 python3-PyYAML python3-requests ansible git which wget acl perl-rrdtool make gcc munin apache2
-RUN cpan install CGI::Fast 
-RUN zypper --non-interactive in apache2-mod_fcgid && \
-    echo "LoadModule fcgid_module /usr/lib64/apache2/mod_fcgid.so" >> /etc/apache2/conf.d/fcgid.conf
-RUN ansible-playbook local.yml -c local -v
-RUN zypper rm --clean-deps -y make gcc ansible
-RUN rm -rf /ansible/roles /ansible/local.yml
-RUN chmod +x init.sh
+# Copier uniquement les scripts/outils nécessaires (ex: munin_inventory.sh)
+COPY munin_inventory.sh /usr/local/bin/munin_inventory.sh
+RUN chmod +x /usr/local/bin/munin_inventory.sh
 
-ENV INVENTORY_GEN="repo" \ 
-    HOSTS_REPO="https:\/\/your\/repo.git" \
-    HOSTS_LIST="1 10 node domain" \
-    HOSTS_URL="https:\/\/example.com\/munin_inventory" \
-    APACHE_REQUIRE="all granted" \
-    APACHE_DOMAIN="munin" \
-    APACHE_MAIL="admin@munin"\
-    TIMEZONE="/Europe/Paris"
+ENV TIMEZONE="/Europe/Paris"
+# Exposer les ports
+
 
 EXPOSE 80
 EXPOSE 4949
@@ -30,5 +22,6 @@ VOLUME /etc/munin/
 VOLUME /etc/apache2/vhosts.d/
 VOLUME /var/lib/munin/
 
-ENTRYPOINT ["./init.sh"]
-CMD ["/usr/sbin/apachectl", "start",  "-DFOREGROUND"]
+# Démarrer les services (ou utiliser init.sh si nécessaire)
+CMD ["/usr/local/bin/init.sh"]
+
