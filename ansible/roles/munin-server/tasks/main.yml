@@ -5,11 +5,23 @@
 - name: install apaches fcgi-module
   zypper: name=apache2-mod_fcgid state=present
 
-- name: enable apaches fcgi-module
-  apache2_module: name=fcgid state=present
+- name: enable fcgid module
+  lineinfile:
+    path: /etc/apache2/conf.d/fcgid.conf
+    line: "LoadModule fcgid_module /usr/lib64/apache2/mod_fcgid.so"
+    create: yes
+    owner: root
+    group: root
+    mode: 0644
 
-- name: enable apaches rewrite-module
-  apache2_module: name=rewrite state=present
+- name: enable rewrite module
+  lineinfile:
+    path: /etc/apache2/conf.d/rewrite.conf
+    line: "LoadModule rewrite_module /usr/lib64/apache2/mod_rewrite.so"
+    create: yes
+    owner: root
+    group: root
+    mode: 0644
 
 - name: install munin-server
   zypper: name=munin state=present
@@ -17,7 +29,6 @@
 - name: install cron
   zypper: name=cron state=present
 
-# for email notifications
 - name: install mail tools
   zypper:
     name: "{{item}}"
@@ -26,8 +37,6 @@
     - mailx
     - msmtp-mta
 
-# This script pulls the hosts-repo and therefore need a private key!!!
-#
 - name: setup cronjob to generate inventory
   copy: src=munin_inventory.sh dest=/etc/cron.hourly mode=755
 
@@ -49,11 +58,6 @@
 - name: mkdir for munin tmpfs
   file: path=/munintmp state=directory
 
-# tmpfs is not trivial with docker
-#
-#- name: mount tmpfs for munin
-#  mount: name=/munintmp fstype=tmpfs src=tmpfs state=mounted
-
 - name: copy munin.conf
   copy: src=munin.conf dest=/etc/munin/munin.conf
 
@@ -74,5 +78,3 @@
 
 - name: delete htaccess
   file: path=/srv/www/htdocs/munin/.htaccess state=absent
-
-
