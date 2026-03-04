@@ -5,12 +5,12 @@ ADD init.sh /ansible/
 
 WORKDIR /ansible/
 
-RUN zypper --non-interactive in --auto-agree-with-licenses python3 python3-PyYAML python-requests python3-requests ansible git which wget acl perl-rrdtool make gcc munin &&\
-    cpan install CGI::Fast &&\
-    ansible-playbook local.yml -c local &&\
-    zypper rm --clean-deps -y make gcc ansible &&\
-    rm -rf /ansible/roles /ansible/local.yml &&\
-    chmod +x init.sh
+RUN zypper --non-interactive in --auto-agree-with-licenses python3 python3-PyYAML python-requests python3-requests ansible git which wget acl perl-rrdtool make gcc munin 
+RUN cpan install CGI::Fast 
+RUN ansible-playbook local.yml -c local
+RUN zypper rm --clean-deps -y make gcc ansible
+RUN rm -rf /ansible/roles /ansible/local.yml
+RUN chmod +x init.sh
 
 ENV INVENTORY_GEN="repo" \ 
     HOSTS_REPO="https:\/\/your\/repo.git" \
