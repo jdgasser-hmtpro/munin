@@ -26,4 +26,5 @@ VOLUME /var/lib/munin/
 CMD /usr/sbin/munin-node & \
     /usr/sbin/httpd & \
     /usr/sbin/cron & \
+    su - munin --shell=/bin/bash -c "munin-cron" & \
     tail -f /dev/null
