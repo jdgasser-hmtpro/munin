@@ -19,7 +19,7 @@ ENV INVENTORY_GEN="repo" \
     APACHE_REQUIRE="all granted" \
     APACHE_DOMAIN="munin" \
     APACHE_MAIL="admin@munin"\
-    TIMEZONE="/Europe/Berlin"
+    TIMEZONE="/Europe/Paris"
 
 EXPOSE 80
 EXPOSE 4949
