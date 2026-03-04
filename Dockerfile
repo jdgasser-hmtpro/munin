@@ -9,7 +9,8 @@ RUN zypper --non-interactive in --auto-agree-with-licenses python3 python3-PyYAM
 RUN cpan install CGI::Fast 
 RUN zypper --non-interactive in apache2-mod_fcgid && \
     echo "LoadModule fcgid_module /usr/lib64/apache2/mod_fcgid.so" >> /etc/apache2/conf.d/fcgid.conf
-RUN ansible-playbook local.yml -c local
+RUN zypper --non-interactive in munin perl-rrdtool perl-CGI::Fast
+RUN ansible-playbook local.yml -c local -v
 RUN zypper rm --clean-deps -y make gcc ansible
 RUN rm -rf /ansible/roles /ansible/local.yml
 RUN chmod +x init.sh
