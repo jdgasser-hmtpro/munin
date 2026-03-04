@@ -8,8 +8,7 @@ WORKDIR /ansible/
 RUN zypper --non-interactive in --auto-agree-with-licenses python3 python3-PyYAML python3-requests ansible git which wget acl perl-rrdtool make gcc munin apache2
 RUN cpan install CGI::Fast 
 RUN zypper --non-interactive in apache2-mod_fcgid && \
-    /usr/sbin/a2enmod fcgid && \
-    /usr/sbin/apache2ctl start
+    echo "LoadModule fcgid_module /usr/lib64/apache2/mod_fcgid.so" >> /etc/apache2/conf.d/fcgid.conf
 RUN ansible-playbook local.yml -c local
 RUN zypper rm --clean-deps -y make gcc ansible
 RUN rm -rf /ansible/roles /ansible/local.yml
