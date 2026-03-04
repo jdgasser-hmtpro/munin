@@ -23,4 +23,7 @@ VOLUME /etc/apache2/vhosts.d/
 VOLUME /var/lib/munin/
 
 # Démarrer les services directement (sans init.sh)
-CMD service munin-node start && /usr/sbin/httpd && service cron start && tail -f /dev/null
+CMD /usr/sbin/munin-node & \
+    /usr/sbin/httpd & \
+    /usr/sbin/cron & \
+    tail -f /dev/null
