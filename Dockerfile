@@ -1,4 +1,4 @@
-FROM opensuse/leap:15.6
+FROM opensuse/leap:latest
 
 # Installer les dépendances
 RUN zypper --non-interactive in --auto-agree-with-licenses \
