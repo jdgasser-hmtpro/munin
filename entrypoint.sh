@@ -1,16 +1,19 @@
 #!/bin/bash
 set -e
 
-# Répertoires runtime (/var/run est vide à chaque démarrage de conteneur)
 mkdir -p /var/run/munin /var/log/munin
 chown -R munin:munin /var/run/munin /var/log/munin /var/lib/munin
 chown munin:munin /etc/munin/munin-node.conf 2>/dev/null || true
 
-/usr/sbin/munin-node &
-/usr/sbin/httpd &
-/usr/sbin/cron &
+# Démons de longue durée — on mémorise leurs PIDs
+/usr/sbin/munin-node & NODE_PID=$!
+/usr/sbin/httpd & HTTPD_PID=$!
+/usr/sbin/cron & CRON_PID=$!
 
-su - munin --shell=/bin/bash -c "munin-cron" || true
+# Premier cycle immédiat (job éphémère, on ne l'attend pas)
+su - munin --shell=/bin/bash -c "munin-cron" || true &
 
-wait -n
+# On ne sort que si un DÉMON meurt
+wait -n "$NODE_PID" "$HTTPD_PID" "$CRON_PID"
+echo "Un service critique est mort — arrêt du conteneur" >&2
 exit 1
