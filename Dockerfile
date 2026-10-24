@@ -13,8 +13,8 @@ RUN mkdir -p /etc/munin/plugin-conf.d
 RUN echo '*/5 * * * * munin /usr/bin/munin-cron' > /etc/cron.d/munin && \
     chmod 644 /etc/cron.d/munin
 
-RUN ln -sf /usr/share/zoneinfo/$TZ /etc/localtime || true
-ENV TIMEZONE="Europe/Paris"
+ENV TZ=Europe/Paris
+RUN ln -sfn /usr/share/zoneinfo/Europe/Paris /etc/localtime
 
 COPY munin_inventory.sh /usr/local/bin/munin_inventory.sh
 RUN chmod +x /usr/local/bin/munin_inventory.sh
